@@ -1,0 +1,20 @@
+---
+- name: Nginx remove default site config file ({{ nginx_sites_default_dir }}/default.conf)
+  ansible.builtin.file:
+    path: "{{ nginx_sites_default_dir }}/default.conf"
+    state: absent
+  when: nginx_custom_default_config_site | bool
+
+- name: Setting default config facts arguments
+  ansible.builtin.set_fact:
+    nginx_default_fact: "{{ nginx_default_site_config }}"
+  when: nginx_custom_default_config_site | bool
+
+- name: Nginx custom default site config file ({{ nginx_sites_default_dir }}/default.conf)
+  ansible.builtin.template:
+    src: nginx/conf.d/default.conf.j2
+    dest: "{{ nginx_sites_default_dir }}/default.conf"
+    mode: u=rw,g=r,o=r
+  no_log: true
+  failed_when: false
+  when: nginx_custom_default_config_site | bool

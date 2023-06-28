@@ -1,0 +1,21 @@
+---
+- name: Template a file, create Nginx default html page
+  ansible.builtin.template:
+    src: "nginx/html/index.html.j2"
+    dest: "{{ nginx_html_www_dir }}/index.html"
+    mode: u=rw,g=r,o=r
+  no_log: true
+  failed_when: false
+
+- name: Nginx installed current version
+  ansible.builtin.shell: "nginx -v 2>&1 | awk -F/ '{print $2}'"
+  register: nginx_version
+  changed_when: nginx_version.rc != 0
+
+- name: Replace version information on default html page
+  ansible.builtin.replace:
+    path: "{{ nginx_html_www_dir }}/index.html"
+    regexp: "__VERSION__"
+    replace: "{{ nginx_version.stdout_lines[0] }}"
+  no_log: true
+  failed_when: false

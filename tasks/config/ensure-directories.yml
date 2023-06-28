@@ -1,0 +1,15 @@
+---
+- name: Create the directories for site specific configurations
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+  with_items:
+    - "{{ nginx_snippets_dir }}"
+    - "{{ nginx_sites_default_dir }}"
+    - "{{ nginx_sites_available_dir }}"
+    - "{{ nginx_sites_enabled_dir }}"
+    - "{{ nginx_html_www_dir }}"
+    - "{{ nginx_html_error_dir }}"
+    - "{{ nginx_log_dir }}"
+    - "{{ nginx_cache_dir }}"

@@ -1,0 +1,14 @@
+---
+- name: Template a file, create Nginx errors page
+  ansible.builtin.template:
+    src: "nginx/error/{{ item }}.html.j2"
+    dest: "{{ nginx_html_error_dir }}/{{ item }}.html"
+    owner: root
+    group: root
+    mode: '0644'
+  no_log: true
+  failed_when: false
+  loop:
+    - 403
+    - 404
+    - 502

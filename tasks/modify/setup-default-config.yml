@@ -1,0 +1,9 @@
+---
+- name: Template a file, create Nginx configuration file ({{ nginx_config_dir }}/nginx.conf)
+  ansible.builtin.template:
+    src: nginx/nginx.conf.j2
+    dest: "{{ nginx_config_dir }}/nginx.conf"
+    mode: u=rw,g=r,o=r
+  no_log: true
+  failed_when: false
+  when: nginx_custom_default_config | bool

@@ -1,0 +1,13 @@
+---
+nginx_config_dir: /etc/nginx
+nginx_snippets_dir: "{{ nginx_config_dir }}/snippets"
+nginx_sites_default_dir: "{{ nginx_config_dir }}/conf.d"
+nginx_sites_available_dir: "{{ nginx_config_dir }}/sites-available"
+nginx_sites_enabled_dir: "{{ nginx_config_dir }}/sites-enabled"
+
+nginx_share_html_dir: /usr/share/nginx
+nginx_html_www_dir: "{{ nginx_share_html_dir }}/html"
+nginx_html_error_dir: "{{ nginx_share_html_dir }}/error"
+
+nginx_log_dir: /var/log/nginx
+nginx_cache_dir: /var/cache/nginx
