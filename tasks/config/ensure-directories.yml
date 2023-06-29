@@ -1,8 +1,11 @@
 ---
-- name: Create the directories for site specific configurations
+- name: Ensure the directories for Nginx configurations
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
+    recurse: true
+    owner: root
+    group: root
     mode: '0755'
   with_items:
     - "{{ nginx_snippets_dir }}"
@@ -11,5 +14,21 @@
     - "{{ nginx_sites_enabled_dir }}"
     - "{{ nginx_html_www_dir }}"
     - "{{ nginx_html_error_dir }}"
-    - "{{ nginx_log_dir }}"
-    - "{{ nginx_cache_dir }}"
+
+- name: Ensure Nginx log directory exist
+  ansible.builtin.file:
+    path: "{{ nginx_log_dir }}"
+    state: directory
+    recurse: true
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Ensure Nginx cache directory exist
+  ansible.builtin.file:
+    path: "{{ nginx_cache_dir }}"
+    state: directory
+    recurse: true
+    owner: root
+    group: root
+    mode: "0755"

@@ -1,9 +1,10 @@
 ---
 nginx_custom_enable: false
-nginx_custom_default_config_site: "{{ nginx_custom_enable }}"
+nginx_remove_default_config_site: false
+nginx_custom_default_config_site: "{{ nginx_custom_enable | bool }}"
 
 # Modify nginx.conf configuration
-nginx_custom_default_config: "{{ nginx_custom_enable }}"
+nginx_custom_default_config: "{{ nginx_custom_enable | bool }}"
 nginx_user: nginx
 nginx_group: "{{ nginx_user }}"
 nginx_worker_processes: "{% if ansible_processor_vcpus is defined %}{{ ansible_processor_vcpus }}{% else %}auto{% endif %}"
