@@ -3,7 +3,9 @@
   ansible.builtin.template:
     src: nginx/snippets/error.conf.j2
     dest: "{{ nginx_snippets_dir }}/error.conf"
-    mode: u=rw,g=r,o=r
+    owner: root
+    group: root
+    mode: '0644'
   no_log: true
   failed_when: false
 
@@ -11,7 +13,9 @@
   ansible.builtin.template:
     src: nginx/snippets/general.conf.j2
     dest: "{{ nginx_snippets_dir }}/general.conf"
-    mode: u=rw,g=r,o=r
+    owner: root
+    group: root
+    mode: '0644'
   no_log: true
   failed_when: false
 
@@ -19,7 +23,9 @@
   ansible.builtin.template:
     src: nginx/snippets/compression.conf.j2
     dest: "{{ nginx_snippets_dir }}/compression.conf"
-    mode: u=rw,g=r,o=r
+    owner: root
+    group: root
+    mode: '0644'
   no_log: true
   failed_when: false
 
@@ -27,7 +33,9 @@
   ansible.builtin.template:
     src: nginx/snippets/security.conf.j2
     dest: "{{ nginx_snippets_dir }}/security.conf"
-    mode: u=rw,g=r,o=r
+    owner: root
+    group: root
+    mode: '0644'
   no_log: true
   failed_when: false
 
@@ -35,7 +43,9 @@
   ansible.builtin.template:
     src: nginx/snippets/proxy.conf.j2
     dest: "{{ nginx_snippets_dir }}/proxy.conf"
-    mode: u=rw,g=r,o=r
+    owner: root
+    group: root
+    mode: '0644'
   no_log: true
   failed_when: false
 

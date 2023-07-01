@@ -1,0 +1,12 @@
+---
+- name: Add Nginx proxy site config file (Available - Http/Https)
+  ansible.builtin.template:
+    src: "nginx/sites/vhost-{{ proxy_sites_config.value.protocol }}.conf.j2"
+    dest: "{{ nginx_sites_available_dir }}/{{ proxy_sites_config.key }}.conf"
+    mode: u=rw,g=r,o=r
+  no_log: true
+  failed_when: false
+  tags: nginx_proxy_sites_config
+  when:
+    - proxy_sites_config.value.available is defined
+    - proxy_sites_config.value.available | bool

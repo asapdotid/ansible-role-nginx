@@ -3,7 +3,9 @@
   ansible.builtin.template:
     src: "nginx/html/index.html.j2"
     dest: "{{ nginx_html_www_dir }}/index.html"
-    mode: u=rw,g=r,o=r
+    owner: root
+    group: root
+    mode: '0644'
   no_log: true
   failed_when: false
 
@@ -17,5 +19,8 @@
     path: "{{ nginx_html_www_dir }}/index.html"
     regexp: "__VERSION__"
     replace: "{{ nginx_version.stdout_lines[0] }}"
+    owner: root
+    group: root
+    mode: '0644'
   no_log: true
   failed_when: false

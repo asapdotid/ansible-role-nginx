@@ -22,7 +22,7 @@ server {
         root   /usr/share/nginx/html;
         index  index.html index.htm;
     }
-    include {{ nginx_snippets_dir }}/errors.conf;
+    include {{ nginx_snippets_dir }}/error.conf;
     include {{ nginx_snippets_dir }}/security.conf;
     include {{ nginx_snippets_dir }}/general.conf;
     include {{ nginx_snippets_dir }}/compression.conf;
@@ -43,7 +43,7 @@ server {
         root   /usr/share/nginx/html;
         index  index.html index.htm;
     }
-    include {{ nginx_snippets_dir }}/errors.conf;
+    include {{ nginx_snippets_dir }}/error.conf;
     include {{ nginx_snippets_dir }}/security.conf;
     include {{ nginx_snippets_dir }}/general.conf;
     include {{ nginx_snippets_dir }}/compression.conf;

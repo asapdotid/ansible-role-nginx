@@ -14,7 +14,9 @@
   ansible.builtin.template:
     src: nginx/conf.d/default.conf.j2
     dest: "{{ nginx_sites_default_dir }}/default.conf"
-    mode: u=rw,g=r,o=r
+    owner: root
+    group: root
+    mode: '0644'
   no_log: true
   failed_when: false
   when: nginx_custom_default_config_site | bool

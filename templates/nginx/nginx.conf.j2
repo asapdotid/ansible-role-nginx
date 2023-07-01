@@ -10,7 +10,7 @@ worker_processes {{ nginx_worker_processes }};
 worker_rlimit_nofile {{ nginx_worker_rlimit_nofile }};
 
 {% if nginx_pid_file %}
-pid        {{ nginx_pid_file }};
+pid {{ nginx_pid_file }};
 {% endif %}
 
 events {
@@ -31,6 +31,9 @@ http {
 {% for v in nginx_log_params %}
     {{ v if "}" in v[-2:] else v+";" }}
 {% endfor %}
+
+    # Error handling
+    include {{ nginx_snippets_dir }}/error.conf;
 
     include {{ nginx_config_dir }}/conf.d/*.conf;
     include {{ nginx_config_dir }}/sites-enabled/*;

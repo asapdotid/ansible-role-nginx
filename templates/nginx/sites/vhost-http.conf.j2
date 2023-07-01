@@ -1,0 +1,53 @@
+# {{ ansible_managed }}
+## Site configuration
+upstream {{ proxy_sites_config.key }}_backend {
+{% for upstream in proxy_sites_config.value.upstreams %}
+{% if upstream.backend_args is defined and upstream.backend_args|length %}
+    server {{ upstream.backend_address }}:{{ upstream.backend_port }} {{ upstream.backend_args }};
+{% else %}
+    server {{ upstream.backend_address }}:{{ upstream.backend_port }};
+{% endif %}
+{% endfor %}
+}
+
+proxy_cache_path {{ nginx_cache_dir }}/{{ proxy_sites_config.key }} levels=1:2 keys_zone={{ proxy_sites_config.key }}_cache_zone:10m max_size=100m inactive=60;
+
+server {
+    listen         {{ proxy_sites_config.value.listen | default(80) }};
+    listen    [::]:{{ proxy_sites_config.value.listen | default(80) }};
+    server_name    {{ proxy_sites_config.value.domains | join(' ') }};
+
+    client_max_body_size {{ proxy_sites_config.value.client_max_body_size | default('50M') }};
+
+{% if proxy_sites_config.value.access_log %}
+    access_log {{ nginx_log_dir }}/{{ proxy_sites_config.key }}_access.log;
+{% else %}
+    access_log off;
+{% endif %}
+{% if proxy_sites_config.value.error_log %}
+    error_log {{ nginx_log_dir }}/{{ proxy_sites_config.key }}_error.log error;
+{% else %}
+    error_log off;
+{% endif %}
+
+    include {{ nginx_snippets_dir }}/error.conf;
+    include {{ nginx_snippets_dir }}/security.conf;
+    include {{ nginx_snippets_dir }}/general.conf;
+    include {{ nginx_snippets_dir }}/compression.conf;
+
+    add_header 'Access-Control-Allow-Origin' '{{ proxy_sites_config.value.domains | join(' ') }}' always;
+    add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS' always;
+    add_header 'Access-Control-Allow-Headers' 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range' always;
+
+    location / {
+        include {{ nginx_snippets_dir }}/proxy.conf;
+        proxy_read_timeout {{ proxy_sites_config.value.proxy_read_timeout | default('300') }};
+        proxy_pass http://{{ proxy_sites_config.key }}_backend;
+        proxy_cache {{ proxy_sites_config.key }}_cache_zone;
+{% if (proxy_sites_config.value.conn_upgrade is defined) and (proxy_sites_config.value.conn_upgrade | bool) %}
+        proxy_set_header Connection "upgrade";
+{% endif %}
+        # auth_basic "Restricted Content";
+        # auth_basic_user_file {{ nginx_config_dir }}/{{ proxy_sites_config.key }}_htpasswd;
+   }
+}

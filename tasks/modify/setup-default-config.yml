@@ -3,7 +3,10 @@
   ansible.builtin.template:
     src: nginx/nginx.conf.j2
     dest: "{{ nginx_config_dir }}/nginx.conf"
-    mode: u=rw,g=r,o=r
+    owner: root
+    group: root
+    mode: '0644'
+    backup: true
   no_log: true
   failed_when: false
   when: nginx_custom_default_config | bool

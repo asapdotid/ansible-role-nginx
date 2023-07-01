@@ -38,6 +38,7 @@
       tags: nginx_modify_systemd
 
 - name: Custom nginx configurations
+  become: true
   when:
     - nginx_enable | bool
     - nginx_custom_enable | bool
@@ -60,12 +61,24 @@
       tags: nginx_config_default
 
     - name: Nginx configuration default site
-      ansible.builtin.include_tasks: "{{ role_path }}/tasks/modify/setup-default-config-site.yml"
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/modify/setup-default-site-config.yml"
       tags: nginx_config_default_site
 
     - name: Nginx custom default index.html page
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/modify/setup-default-html.yml"
       tags: nginx_config_default_html
+
+    - name: Nginx setup virtual hosts configuration
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/modify/setup-proxy-site-config.yml"
+      loop: "{{ nginx_proxy_sites_config | dict2items }}"
+      loop_control:
+        loop_var: proxy_sites_config
+      tags: nginx_proxy_sites_config
+      when:
+        - proxy_sites_config is defined
+        - proxy_sites_config | length > 0
+
+  notify: (Handler) Start/reload NGINX
 
 - name: Trigger handlers if necessary
   ansible.builtin.meta: flush_handlers

@@ -1,5 +1,5 @@
 ---
-- name: Template a file, create Nginx errors page
+- name: Template a file, create Nginx errors html page
   ansible.builtin.template:
     src: "nginx/error/{{ item }}.html.j2"
     dest: "{{ nginx_html_error_dir }}/{{ item }}.html"
