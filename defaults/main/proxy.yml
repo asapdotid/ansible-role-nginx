@@ -21,7 +21,7 @@ nginx_proxy_sites_config:
         # - "check interval=5000 rise=1 fall=3 timeout=4000"
     client_max_body_size: "256M"
     proxy_read_timeout: "360"
-    # connection_upgrade: true
+    connection_upgrade: true
     # auth:
     #   username: myusername
     #   password: mysecretpassword
