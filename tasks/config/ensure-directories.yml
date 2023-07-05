@@ -11,6 +11,7 @@
     - "{{ nginx_sites_default_dir }}"
     - "{{ nginx_sites_available_dir }}"
     - "{{ nginx_sites_enabled_dir }}"
+    - "{{ nginx_sites_auth_dir }}"
     - "{{ nginx_html_www_dir }}"
     - "{{ nginx_html_error_dir }}"
     - "{{ nginx_log_dir }}"

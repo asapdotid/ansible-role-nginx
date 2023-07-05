@@ -32,8 +32,7 @@ http {
     {{ v if "}" in v[-2:] else v+";" }}
 {% endfor %}
 
-    # Error handling
-    include {{ nginx_snippets_dir }}/error.conf;
+    include {{ nginx_snippets_dir }}/error-http.conf;
 
     include {{ nginx_config_dir }}/conf.d/*.conf;
     include {{ nginx_config_dir }}/sites-enabled/*;

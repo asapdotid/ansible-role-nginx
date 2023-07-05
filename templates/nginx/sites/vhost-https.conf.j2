@@ -1,11 +1,25 @@
 # {{ ansible_managed }}
 ## Site configuration
 upstream {{ proxy_sites_config.key }}_backend {
-{% for upstream in proxy_sites_config.value.upstreams %}
-{% if upstream.backend_args is defined and upstream.backend_args|length %}
-    server {{ upstream.backend_address }}:{{ upstream.backend_port }} {{ upstream.backend_args }};
+{% for key, value in proxy_sites_config.value.upstreams.items() recursive %}
+{% if key == 'method' %}
+{% if value is defined and value|length %}
+    {{ value }};
+{% endif %}
+{% endif %}
+{% if key == 'servers' %}
+{% for server in value %}
+{% if server.backend_args is defined and server.backend_args|length %}
+    server {{ server.backend_address }}:{{ server.backend_port }} {{ server.backend_args }};
 {% else %}
-    server {{ upstream.backend_address }}:{{ upstream.backend_port }};
+    server {{ server.backend_address }}:{{ server.backend_port }};
+{% endif %}
+{% endfor %}
+{% endif %}
+{% if key == 'options' %}
+{% for option in value %}
+    {{ option }};
+{% endfor %}
 {% endif %}
 {% endfor %}
 }
@@ -56,10 +70,12 @@ server {
         proxy_read_timeout {{ proxy_sites_config.value.proxy_read_timeout | default('300') }};
         proxy_pass http://{{ proxy_sites_config.key }}_backend;
         proxy_cache {{ proxy_sites_config.key }}_cache_zone;
-{% if (proxy_sites_config.value.conn_upgrade is defined) and proxy_sites_config.value.conn_upgrade %}
+{% if (proxy_sites_config.value.connection_upgrade is defined) and proxy_sites_config.value.connection_upgrade %}
         proxy_set_header Connection "upgrade";
+{% else %}
+        # proxy_set_header Connection "upgrade";
 {% endif %}
         # auth_basic "Restricted Content";
-        # auth_basic_user_file {{ nginx_config_dir }}/{{ proxy_sites_config.key }}_htpasswd;
+        # auth_basic_user_file {{ nginx_sites_auth_dir }}/{{ proxy_sites_config.key }}_htpasswd;
    }
 }

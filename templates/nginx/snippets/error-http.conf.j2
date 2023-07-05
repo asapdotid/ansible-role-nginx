@@ -1,0 +1,5 @@
+# {{ ansible_managed }}
+## Error Page Setting
+error_page 400 401 402 404 405 406 407 408 409 410 411 412 413 414 415 416 417 418 420 422 423 424 426 428 429 431 444 449 450 451 {{ nginx_html_error_dir }}/404_html;
+error_page 403  {{ nginx_html_error_dir }}/403_html;
+error_page 500 501 502 {{ nginx_html_error_dir }}/502_html;

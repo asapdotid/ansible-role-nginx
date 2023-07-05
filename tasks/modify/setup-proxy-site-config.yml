@@ -3,10 +3,175 @@
   ansible.builtin.template:
     src: "nginx/sites/vhost-{{ proxy_sites_config.value.protocol }}.conf.j2"
     dest: "{{ nginx_sites_available_dir }}/{{ proxy_sites_config.key }}.conf"
-    mode: u=rw,g=r,o=r
-  no_log: true
-  failed_when: false
+    owner: root
+    group: root
+    mode: '0644'
+  # no_log: true
+  # failed_when: false
   tags: nginx_proxy_sites_config
   when:
     - proxy_sites_config.value.available is defined
     - proxy_sites_config.value.available | bool
+
+- name: Enable server block config file (Enabled)
+  ansible.builtin.file:
+    src: "{{ nginx_sites_available_dir }}/{{ proxy_sites_config.key }}.conf"
+    dest: "{{ nginx_sites_enabled_dir }}/{{ proxy_sites_config.key }}"
+    state: link
+  tags: nginx_proxy_sites_config
+  when:
+    - proxy_sites_config.value.available is defined
+    - proxy_sites_config.value.available | bool
+    - proxy_sites_config.value.enable is defined
+    - proxy_sites_config.value.enable | bool
+
+- name: Remove available server block config file (Disabled)
+  ansible.builtin.file:
+    path: "{{ nginx_sites_available_dir }}/{{ proxy_sites_config.key }}.conf"
+    state: absent
+  tags: nginx_proxy_sites_config
+  when:
+    - proxy_sites_config.value.available is defined
+    - not proxy_sites_config.value.available
+
+- name: Remove enable server block config file (Disabled)
+  ansible.builtin.file:
+    path: "{{ nginx_sites_enabled_dir }}/{{ proxy_sites_config.key }}"
+    state: absent
+  tags: nginx_proxy_sites_config
+  when:
+    - proxy_sites_config.value.available is defined
+    - proxy_sites_config.value.available | bool
+    - proxy_sites_config.value.enable is defined
+    - not proxy_sites_config.value.enable
+
+- name: Install python-passlib for Python 3 hosts
+  ansible.builtin.package:
+    name:
+      - "python3-passlib"
+    state: present
+  register: result
+  delay: 10
+  retries: 12
+  until: result is successful
+  tags: nginx_proxy_sites_config
+  when:
+    - ansible_python['version']['major'] == 3
+    - proxy_sites_config.value.available is defined
+    - proxy_sites_config.value.available | bool
+    - proxy_sites_config.value.auth is defined
+    - proxy_sites_config.value.auth | length > 0
+
+- name: Install python-passlib for Python 2 hosts
+  ansible.builtin.package:
+    name:
+      - "python-passlib"
+    state: present
+  register: result
+  delay: 10
+  retries: 12
+  until: result is successful
+  tags: nginx_proxy_sites_config
+  when:
+    - ansible_python['version']['major'] == 2
+    - proxy_sites_config.value.available is defined
+    - proxy_sites_config.value.available | bool
+    - proxy_sites_config.value.auth is defined
+    - proxy_sites_config.value.auth | length > 0
+
+- name: Check server proxy auth file
+  ansible.builtin.stat:
+    path: "{{ nginx_sites_auth_dir }}/{{ proxy_sites_config.key }}_htpasswd"
+  register: proxy_site_config_auth_file
+  tags: nginx_proxy_sites_config
+
+- name: Remove file (delete file) proxy auth config
+  ansible.builtin.file:
+    path: "{{ nginx_sites_auth_dir }}/{{ proxy_sites_config.key }}_htpasswd"
+    state: absent
+  tags: nginx_proxy_sites_config
+  when:
+    - proxy_site_config_auth_file.stat.exists is true
+    - proxy_sites_config.value.auth is not defined
+
+- name: Add authentication server proxy config
+  community.general.htpasswd:
+    path: "{{ nginx_sites_auth_dir }}/{{ proxy_sites_config.key }}_htpasswd"
+    name: "{{ proxy_sites_config.value.auth.username }}"
+    password: "{{ proxy_sites_config.value.auth.password }}"
+    owner: root
+    group: root
+    mode: '0640'
+  tags: nginx_proxy_sites_config
+  when:
+    - proxy_sites_config.value.available is defined
+    - proxy_sites_config.value.available | bool
+    - proxy_sites_config.value.auth is defined
+    - proxy_sites_config.value.auth | length > 0
+
+- name: Check server proxy available config file
+  ansible.builtin.stat:
+    path: "{{ nginx_sites_available_dir }}/{{ proxy_sites_config.key }}.conf"
+  register: proxy_site_config_available_file
+  tags: nginx_proxy_sites_config
+
+- name: Ensure server block auth restricted content
+  ansible.builtin.lineinfile:
+    path: "{{ nginx_sites_available_dir }}/{{ proxy_sites_config.key }}.conf"
+    regexp: '^(\s*?)#+\s+auth_basic\b.*'
+    line: '        auth_basic "Restricted Content";'
+  tags: nginx_proxy_sites_config
+  when:
+    - proxy_site_config_available_file.stat.exists
+    - proxy_sites_config.value.available is defined
+    - proxy_sites_config.value.available | bool
+    - proxy_sites_config.value.auth is defined
+    - proxy_sites_config.value.auth | length > 0
+
+- name: Ensure available site proxy config file
+  ansible.builtin.lineinfile:
+    path: "{{ nginx_sites_available_dir }}/{{ proxy_sites_config.key }}.conf"
+    regexp: '^(\s*?)#+\s+auth_basic_user_file\b.*'
+    line: "        auth_basic_user_file {{ nginx_sites_auth_dir }}/{{ proxy_sites_config.key }}_htpasswd;"
+  tags: nginx_proxy_sites_config
+  when:
+    - proxy_site_config_available_file.stat.exists
+    - proxy_sites_config.value.available is defined
+    - proxy_sites_config.value.available | bool
+    - proxy_sites_config.value.auth is defined
+    - proxy_sites_config.value.auth | length > 0
+
+- name: Disable site proxy restricted content
+  ansible.builtin.lineinfile:
+    path: "{{ nginx_sites_available_dir }}/{{ proxy_sites_config.key }}.conf"
+    regexp: '^(\s*?)+auth_basic\b.*'
+    line: '        # auth_basic "Restricted Content";'
+  tags: nginx_proxy_sites_config
+  when:
+    - proxy_site_config_available_file.stat.exists
+    - proxy_sites_config.value.available is defined
+    - proxy_sites_config.value.available | bool
+    - proxy_sites_config.value.auth is not defined
+
+- name: Disable site proxy auth config is set to security
+  ansible.builtin.lineinfile:
+    path: "{{ nginx_sites_available_dir }}/{{ proxy_sites_config.key }}.conf"
+    regexp: '^(\s*?)+auth_basic_user_file\b.*'
+    line: "        # auth_basic_user_file {{ nginx_sites_auth_dir }}/{{ proxy_sites_config.key }}_htpasswd;"
+  tags: nginx_proxy_sites_config
+  when:
+    - proxy_site_config_available_file.stat.exists
+    - proxy_sites_config.value.available is defined
+    - proxy_sites_config.value.available | bool
+    - proxy_sites_config.value.auth is not defined
+
+- name: Remove file (delete file) site proxy auth config
+  ansible.builtin.file:
+    path: "{{ nginx_sites_auth_dir }}/{{ proxy_sites_config.key }}_htpasswd"
+    state: absent
+  tags: nginx_proxy_sites_config
+  when:
+    - proxy_site_config_available_file.stat.exists
+    - proxy_sites_config.value.available is defined
+    - not proxy_sites_config.value.available | bool
+    - proxy_sites_config.value.auth is not defined

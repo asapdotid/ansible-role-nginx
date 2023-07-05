@@ -1,8 +1,18 @@
 ---
-- name: Template a file, create Nginx errors snippets conf
+- name: Template a file, create Nginx error snippets conf
   ansible.builtin.template:
     src: nginx/snippets/error.conf.j2
     dest: "{{ nginx_snippets_dir }}/error.conf"
+    owner: root
+    group: root
+    mode: '0644'
+  no_log: true
+  failed_when: false
+
+- name: Template a file, create Nginx error http snippets conf
+  ansible.builtin.template:
+    src: nginx/snippets/error-http.conf.j2
+    dest: "{{ nginx_snippets_dir }}/error-http.conf"
     owner: root
     group: root
     mode: '0644'

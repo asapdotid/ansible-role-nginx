@@ -12,11 +12,16 @@ nginx_proxy_sites_config:
     access_log: false
     error_log: false
     upstreams:
-      - { backend_address: 192.168.0.100, backend_port: 80, backend_args: "" }
-      - { backend_address: 192.168.0.101, backend_port: 8080, backend_args: "" }
+      # Load balancing methods default: (round-robin), least_conn, ip_hash
+      method: ""
+      servers:
+        - { backend_address: 192.168.0.100, backend_port: 80, backend_args: "weight=3" }
+        - { backend_address: 192.168.0.101, backend_port: 8080, backend_args: "" }
+      options: []
+        # - "check interval=5000 rise=1 fall=3 timeout=4000"
     client_max_body_size: "256M"
     proxy_read_timeout: "360"
-    # conn_upgrade: true
+    # connection_upgrade: true
     # auth:
     #   username: myusername
     #   password: mysecretpassword
