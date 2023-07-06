@@ -1,5 +1,6 @@
 ---
 nginx_custom_enable: false
+nginx_ssl_dhparam_enable: false
 
 # Modify nginx.conf configuration
 nginx_custom_default_config: "{{ nginx_custom_enable | bool }}"

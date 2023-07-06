@@ -1,0 +1,10 @@
+---
+- name: Generate Diffie-Hellman parameters with the default size (4096 bits)
+  community.crypto.openssl_dhparam:
+    path: "{{ nginx_ssl_dir }}/dhparams.pem"
+    owner: root
+    group: root
+    mode: '0644'
+  when:
+    - nginx_ssl_dhparam_enable is defined
+    - nginx_ssl_dhparam_enable | bool

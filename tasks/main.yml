@@ -48,6 +48,10 @@
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/config/ensure-directories.yml"
       tags: nginx_config_directories
 
+    - name: Setup Diffie-Hellman file
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/config/setup-dhparam.yml"
+      tags: nginx_config_dhparam
+
     - name: Nginx add errors html pages
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/modify/setup-error-html.yml"
       tags: nginx_config_error

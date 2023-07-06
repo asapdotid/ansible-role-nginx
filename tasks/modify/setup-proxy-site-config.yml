@@ -1,17 +1,55 @@
 ---
-- name: Add Nginx proxy site config file (Available - Http/Https)
+- name: Check ssl fullchain file
+  ansible.builtin.stat:
+    path: "{{ nginx_letsencrypt_live_dir }}/{{ proxy_sites_config.key }}/fullchain.pem"
+  register: proxy_site_config_ssl_fullchain_file
+  tags: nginx_proxy_sites_config
+  when:
+    - proxy_sites_config.value.protocol is defined
+    - proxy_sites_config.value.protocol == 'https'
+
+- name: Check ssl privkey file
+  ansible.builtin.stat:
+    path: "{{ nginx_letsencrypt_live_dir }}/{{ proxy_sites_config.key }}/privkey.pem"
+  register: proxy_site_config_ssl_privkey_file
+  tags: nginx_proxy_sites_config
+  when:
+    - proxy_sites_config.value.protocol is defined
+    - proxy_sites_config.value.protocol == 'https'
+
+- name: Add Nginx proxy site config file (Available - Https)
   ansible.builtin.template:
     src: "nginx/sites/vhost-{{ proxy_sites_config.value.protocol }}.conf.j2"
     dest: "{{ nginx_sites_available_dir }}/{{ proxy_sites_config.key }}.conf"
     owner: root
     group: root
     mode: '0644'
-  # no_log: true
-  # failed_when: false
+  no_log: true
+  failed_when: false
   tags: nginx_proxy_sites_config
   when:
     - proxy_sites_config.value.available is defined
     - proxy_sites_config.value.available | bool
+    - proxy_sites_config.value.protocol is defined
+    - proxy_sites_config.value.protocol == 'https'
+    - proxy_site_config_ssl_fullchain_file.stat.exists
+    - proxy_site_config_ssl_privkey_file.stat.exists
+
+- name: Add Nginx proxy site config file (Available - Http)
+  ansible.builtin.template:
+    src: "nginx/sites/vhost-{{ proxy_sites_config.value.protocol }}.conf.j2"
+    dest: "{{ nginx_sites_available_dir }}/{{ proxy_sites_config.key }}.conf"
+    owner: root
+    group: root
+    mode: '0644'
+  no_log: true
+  failed_when: false
+  tags: nginx_proxy_sites_config
+  when:
+    - proxy_sites_config.value.available is defined
+    - proxy_sites_config.value.available | bool
+    - proxy_sites_config.value.protocol is defined
+    - proxy_sites_config.value.protocol == 'http'
 
 - name: Enable server block config file (Enabled)
   ansible.builtin.file:
@@ -91,7 +129,7 @@
     state: absent
   tags: nginx_proxy_sites_config
   when:
-    - proxy_site_config_auth_file.stat.exists is true
+    - proxy_site_config_auth_file.stat.exists
     - proxy_sites_config.value.auth is not defined
 
 - name: Add authentication server proxy config

@@ -12,3 +12,7 @@ nginx_html_error_dir: "{{ nginx_share_html_dir }}/error"
 
 nginx_log_dir: /var/log/nginx
 nginx_cache_dir: /var/cache/nginx
+
+nginx_ssl_dir: /etc/ssl
+nginx_letsencrypt_dir: /etc/letsencrypt
+nginx_letsencrypt_live_dir: "{{ nginx_letsencrypt_dir }}/live"

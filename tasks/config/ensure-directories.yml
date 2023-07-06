@@ -16,6 +16,8 @@
     - "{{ nginx_html_error_dir }}"
     - "{{ nginx_log_dir }}"
     - "{{ nginx_cache_dir }}"
+    - "{{ nginx_ssl_dir }}"
+    - "{{ nginx_letsencrypt_dir }}"
 
 # - name: Ensure Nginx log directory exist
 #   ansible.builtin.file:

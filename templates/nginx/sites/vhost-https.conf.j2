@@ -27,16 +27,20 @@ upstream {{ proxy_sites_config.key }}_backend {
 proxy_cache_path {{ nginx_cache_dir }}/{{ proxy_sites_config.key }} levels=1:2 keys_zone={{ proxy_sites_config.key }}_cache_zone:10m max_size=100m inactive=60;
 
 server {
-    listen         {{ proxy_sites_config.value.listen | default(80) }};
-    listen    [::]:{{ proxy_sites_config.value.listen | default(80) }};
-    server_name    {{ proxy_sites_config.value.domains | join(' ') }};
-    return         301 https://$server_name$request_uri;
+    listen      {{ proxy_sites_config.value.listen | default(80) }};
+    listen [::]:{{ proxy_sites_config.value.listen | default(80) }};
+    server_name {{ proxy_sites_config.value.domains | join(' ') }};
+{% if (proxy_sites_config.value.listen is defined) and proxy_sites_config.value.listen != '80' %}
+    return      301 https://$server_name:{{ proxy_sites_config.value.listen }}$request_uri;
+{% else %}
+    return      301 https://$server_name$request_uri;
+{% endif %}
 }
 
 server {
-    listen        {{ proxy_sites_config.value.listen_ssl | default(443) }} ssl http2;
-    listen   [::]:{{ proxy_sites_config.value.listen_ssl | default(443) }} ssl http2;
-    server_name    {{ proxy_sites_config.value.domains | join(' ') }};
+    listen      {{ proxy_sites_config.value.listen | default(443) }} ssl http2;
+    listen [::]:{{ proxy_sites_config.value.listen | default(443) }} ssl http2;
+    server_name {{ proxy_sites_config.value.domains | join(' ') }};
 
     client_max_body_size {{ proxy_sites_config.value.client_max_body_size | default('50M') }};
 
@@ -56,8 +60,12 @@ server {
     add_header Strict-Transport-Security "max-age={{ proxy_sites_config.value.hsts_max_age | default(63072000) }}; includeSubDomains; preload" always;
 {% endif %}
 
-    ssl_certificate {{ nginx_letsencrypt_dir }}/{{ proxy_sites_config.key }}/fullchain.pem;
-    ssl_certificate_key {{ nginx_letsencrypt_dir }}/{{ proxy_sites_config.key }}/privkey.pem;
+    ssl_certificate {{ nginx_letsencrypt_live_dir }}/{{ proxy_sites_config.key }}/fullchain.pem;
+    ssl_certificate_key {{ nginx_letsencrypt_live_dir }}/{{ proxy_sites_config.key }}/privkey.pem;
+{% if (nginx_ssl_dhparam_enable is defined) and nginx_ssl_dhparam_enable %}
+    ssl_dhparam {{ nginx_ssl_dir }}/dhparams.pem;
+{% endif %}
+
     include {{ nginx_snippets_dir }}/ssl.conf;
     include {{ nginx_snippets_dir }}/error.conf;
     include {{ nginx_snippets_dir }}/security.conf;

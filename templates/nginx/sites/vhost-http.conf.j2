@@ -28,9 +28,9 @@ upstream {{ proxy_sites_config.key }}_backend {
 proxy_cache_path {{ nginx_cache_dir }}/{{ proxy_sites_config.key }} levels=1:2 keys_zone={{ proxy_sites_config.key }}_cache_zone:10m max_size=100m inactive=60;
 
 server {
-    listen         {{ proxy_sites_config.value.listen | default(80) }};
-    listen    [::]:{{ proxy_sites_config.value.listen | default(80) }};
-    server_name    {{ proxy_sites_config.value.domains | join(' ') }};
+    listen      {{ proxy_sites_config.value.listen | default(80) }};
+    listen [::]:{{ proxy_sites_config.value.listen | default(80) }};
+    server_name {{ proxy_sites_config.value.domains | join(' ') }};
 
     client_max_body_size {{ proxy_sites_config.value.client_max_body_size | default('50M') }};
 
