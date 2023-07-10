@@ -38,11 +38,11 @@
       tags: nginx_modify_systemd
 
 - name: Custom nginx configurations
-  become: true
+  tags: nginx_custom_enable
   when:
     - nginx_enable | bool
     - nginx_custom_enable | bool
-  tags: nginx_custom_enable
+  notify: (Handler) Start/reload NGINX
   block:
     - name: Ensure configuration directories
       ansible.builtin.include_tasks: "{{ role_path }}/tasks/config/ensure-directories.yml"
@@ -81,8 +81,6 @@
       when:
         - proxy_sites_config is defined
         - proxy_sites_config | length > 0
-
-  notify: (Handler) Start/reload NGINX
 
 - name: Trigger handlers if necessary
   ansible.builtin.meta: flush_handlers
