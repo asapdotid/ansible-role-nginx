@@ -1,4 +1,12 @@
-# Ansible NGINX Role (open source)
+<p align="center"> <img src="https://user-images.githubusercontent.com/34257858/129839002-15e3f2c7-3f75-46d4-afae-0fd207d7fdde.png" width="100" height="100"></p>
+
+<h1 align="center">
+    Ansible Role Nginx
+</h1>
+
+<p align="center" style="font-size: 1.2rem;">
+    Ansible NGINX Role (open source)
+</p>
 
 > This role custom from official release [Ansible NGINX [here](https://github.com/nginxinc/ansible-role-nginx-config).]
 
@@ -8,29 +16,31 @@ This role installs NGINX Open Source, or the NGINX Amplify agent on your target 
 
 ### Ansible
 
-- This role is developed and tested with [maintained](https://docs.ansible.com/ansible/devel/reference_appendices/release_and_maintenance.html) versions of Ansible core (above `2.12`).
-- When using Ansible core, you will also need to install the following collections:
+-   This role is developed and tested with [maintained](https://docs.ansible.com/ansible/devel/reference_appendices/release_and_maintenance.html) versions of Ansible core (above `2.12`).
+-   When using Ansible core, you will also need to install the following collections:
 
     ```yaml
     ---
     collections:
-      - name: ansible.posix
-        version: 1.5.4
-      - name: community.general
-        version: 6.4.0
-      - name: community.crypto # Only required if you plan to install NGINX Plus
-        version: 2.14.1
-      - name: community.docker # Only required if you plan to use Molecule (see below)
-        version: 3.4.7
+        - name: ansible.posix
+          version: 1.5.4
+        - name: community.general
+          version: 6.4.0
+        - name: community.crypto # Only required if you plan to install NGINX Plus
+          version: 2.14.1
+        - name: community.docker # Only required if you plan to use Molecule (see below)
+          version: 3.4.7
     ```
+
     **Note:** You can alternatively install the Ansible community distribution (what is known as the "old" Ansible) if you don't want to manage individual collections.
-- You will need to run this role as a root user using Ansible's `become` parameter. Make sure you have set up the appropriate permissions on your target hosts.
-- Instructions on how to install Ansible can be found in the [Ansible website](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#upgrading-ansible-from-version-2-9-and-older-to-version-2-10-or-later).
+
+-   You will need to run this role as a root user using Ansible's `become` parameter. Make sure you have set up the appropriate permissions on your target hosts.
+-   Instructions on how to install Ansible can be found in the [Ansible website](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#upgrading-ansible-from-version-2-9-and-older-to-version-2-10-or-later).
 
 ### Jinja2
 
-- This role uses Jinja2 templates. Ansible core installs Jinja2 by default, but depending on your install and/or upgrade path, you might be running an outdated version of Jinja2. The minimum version of Jinja2 required for the role to properly function is `3.1`.
-- Instructions on how to install Jinja2 can be found in the [Jinja2 website](https://jinja.palletsprojects.com/en/3.1.x/intro/#installation).
+-   This role uses Jinja2 templates. Ansible core installs Jinja2 by default, but depending on your install and/or upgrade path, you might be running an outdated version of Jinja2. The minimum version of Jinja2 required for the role to properly function is `3.1`.
+-   Instructions on how to install Jinja2 can be found in the [Jinja2 website](https://jinja.palletsprojects.com/en/3.1.x/intro/#installation).
 
 ## Installation
 
@@ -52,54 +62,54 @@ The NGINX Ansible role supports all platforms supported by [NGINX Open Source](h
 
 ```yaml
 AlmaLinux:
-  - 8
-  - 9
+    - 8
+    - 9
 Alpine:
-  - 3.15
-  - 3.16
-  - 3.17
-  - 3.18
+    - 3.15
+    - 3.16
+    - 3.17
+    - 3.18
 Amazon Linux:
-  - 2
+    - 2
 CentOS:
-  - 7.4+
+    - 7.4+
 Debian:
-  - bullseye (11)
-  - bookworm (12)
+    - bullseye (11)
+    - bookworm (12)
 Oracle Linux:
-  - 7
-  - 8
-  - 9
+    - 7
+    - 8
+    - 9
 Red Hat:
-  - 7.4+
-  - 8
-  - 9
+    - 7.4+
+    - 8
+    - 9
 Rocky Linux:
-  - 8
-  - 9
+    - 8
+    - 9
 SUSE/SLES:
-  - 12
-  - 15
+    - 12
+    - 15
 Ubuntu:
-  - focal (20.04)
-  - jammy (22.04)
-  - kinetic (22.10)
-  - lunar (23.04)
+    - focal (20.04)
+    - jammy (22.04)
+    - kinetic (22.10)
+    - lunar (23.04)
 ```
 
 ### NGINX Amplify Agent
 
 ```yaml
 Amazon Linux 2:
-  - any
+    - any
 Debian:
-  - buster (10)
-  - bullseye (11)
+    - buster (10)
+    - bullseye (11)
 Red Hat:
-  - 8
+    - 8
 Ubuntu:
-  - bionic
-  - focal
+    - bionic
+    - focal
 ```
 
 **Note:** You can also use this role to compile NGINX Open Source from source, install NGINX Open Source on compatible yet unsupported platforms, or install NGINX Open Source on BSD systems at your own risk.
@@ -108,16 +118,66 @@ Ubuntu:
 
 This role has multiple variables. The descriptions and defaults for all these variables can be found in the **[`defaults/main/`](https://github.com/nginxinc/ansible-role-nginx/blob/main/defaults/main/)** folder in the following files:
 
-| Name | Description |
-| ---- | ----------- |
-| **[`main.yml`](https://github.com/nginxinc/ansible-role-nginx/blob/main/defaults/main/main.yml)** | NGINX installation variables |
-| **[`amplify.yml`](https://github.com/nginxinc/ansible-role-nginx/blob/main/defaults/main/amplify.yml)** | NGINX Amplify agent installation variables |
-| **[`bsd.yml`](https://github.com/nginxinc/ansible-role-nginx/blob/main/defaults/main/bsd.yml)** | BSD installation variables |
-| **[`logrotate.yml`](https://github.com/nginxinc/ansible-role-nginx/blob/main/defaults/main/logrotate.yml)** | Logrotate configuration variables |
-| **[`selinux.yml`](https://github.com/nginxinc/ansible-role-nginx/blob/main/defaults/main/selinux.yml)** | SELinux configuration variables |
-| **[`systemd.yml`](https://github.com/nginxinc/ansible-role-nginx/blob/main/defaults/main/systemd.yml)** | Systemd configuration variables |
+| Name                                                                                                        | Description                                         |
+| ----------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| **[`main.yml`](https://github.com/nginxinc/ansible-role-nginx/blob/main/defaults/main/main.yml)**           | NGINX installation variables                        |
+| **[`amplify.yml`](https://github.com/nginxinc/ansible-role-nginx/blob/main/defaults/main/amplify.yml)**     | NGINX Amplify agent installation variables          |
+| **[`bsd.yml`](https://github.com/nginxinc/ansible-role-nginx/blob/main/defaults/main/bsd.yml)**             | BSD installation variables                          |
+| **[`logrotate.yml`](https://github.com/nginxinc/ansible-role-nginx/blob/main/defaults/main/logrotate.yml)** | Logrotate configuration variables                   |
+| **[`selinux.yml`](https://github.com/nginxinc/ansible-role-nginx/blob/main/defaults/main/selinux.yml)**     | SELinux configuration variables                     |
+| **[`systemd.yml`](https://github.com/nginxinc/ansible-role-nginx/blob/main/defaults/main/systemd.yml)**     | Systemd configuration variables                     |
 | **[`directory.yml`](https://github.com/nginxinc/ansible-role-nginx/blob/main/defaults/main/directory.yml)** | NGINX information directory configuration variables |
-| **[`modify.yml`](https://github.com/nginxinc/ansible-role-nginx/blob/main/defaults/main/modify.yml)** | Modify systemd configuration variables |
+| **[`modify.yml`](https://github.com/nginxinc/ansible-role-nginx/blob/main/defaults/main/modify.yml)**       | Modify systemd configuration variables              |
+
+## Sample
+
+```yaml
+- hosts: haproxy
+  become: true
+  gather_facts: true
+
+  vars:
+      ### Nginx config
+      nginx_branch: stable
+      nginx_custom_enable: true
+      nginx_ssl_dhparam_enable: true
+      # proxy
+      nginx_proxy_sites_config:
+          jogjascript.com:
+              available: true
+              enable: false
+              protocol: https # site protocol http/https
+              hsts_max_age: 63072000
+              domains:
+                  - app.jogjascript.com
+              listen: 9000
+              access_log: false
+              error_log: false
+              upstreams:
+                  method: "" # default empty == `round-robin` (round-robin/least-connected/ip-hash)
+                  servers:
+                      - {
+                            backend_address: 192.168.0.100,
+                            backend_port: 80,
+                            backend_args: "weight=3",
+                        }
+                      - {
+                            backend_address: 192.168.0.101,
+                            backend_port: 8080,
+                            backend_args: "",
+                        }
+                  options:
+                      - check interval=5000 rise=1 fall=3 timeout=4000
+              client_max_body_size: "256M"
+              proxy_read_timeout: "360"
+              connection_upgrade: true
+              # auth:
+              #   username: myusername
+              #   password: mysecretpassword
+
+  roles:
+      - asapdotid.nginx
+```
 
 ## License
 
